@@ -1,117 +1,146 @@
-# Terraform Azure Landing Zone
+📘 Azure Landing Zone - Terraform Project
+🚀 Overview
 
-Infrastructure as Code (IaC) implementation of an Azure Landing Zone using Terraform. This project provisions and manages core Azure infrastructure components in a modular and reusable manner.
+This project provisions a basic Azure Landing Zone architecture using Terraform. It includes core networking and compute components such as Virtual Machines, Network Security Groups, Bastion Host, and their associations using modular and scalable for_each based design.
 
-## Architecture Components
+🏗️ Architecture Components
 
-The repository contains Terraform configurations for:
+This Terraform setup deploys:
 
-* Resource Groups
-* Virtual Networks (VNet)
-* Subnets
-* Network Security Groups (NSG)
-* Virtual Machines (VM)
-* Bastion Host
-* VNet Peering
-* Storage Accounts
+🖥️ Linux Virtual Machines
+🌐 Virtual Network (assumed existing or separate module)
+🔐 Network Security Groups (NSGs)
+🔗 NSG Subnet Associations
+🛡️ Azure Bastion Host
+🌍 Public IP for Bastion
+⚙️ Dynamic resource creation using for_each
 
-## Repository Structure
+📂 Project Structure
 
-```text
-AZ_LANDING_ZONE/
-├── bastion/
-├── nsg/
-├── resource_group/
-├── storage_account/
-├── subnet/
-├── virtual_network/
-├── vm/
-└── vnet_peering/
-```
+AZ_Landing_Zone/
+│
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── terraform.tfvars
+├── provider.tf
+└── README.md
+⚙️ Key Terraform Concepts Used
+🔁 1. for_each (Dynamic Infrastructure)
 
-Each folder represents an independent Terraform module/component and contains:
+Used for scalable resource creation:
 
-* `main.tf` – Resource definitions
-* `variables.tf` – Input variables
-* `outputs.tf` – Output values
-* `provider.tf` – Provider configuration
-* `terraform.tfvars` – Environment-specific variable values (not committed)
+Multiple VMs
+Multiple NSGs
+Multiple Public IPs
+Bastion Hosts
+Associations
 
-## Prerequisites
+Example:
 
-* Terraform
-* Azure Subscription
-* Azure CLI
-* Appropriate Azure RBAC permissions
+resource "azurerm_linux_virtual_machine" "vm" {
+  for_each = var.VM
+}
+🔐 2. Network Security Groups (NSG)
 
-## Authentication
+NSGs are created dynamically and include rules:
 
-Login to Azure before deployment:
+Allow SSH (22)
+Allow HTTP (80)
+🔗 3. NSG Association
 
-```bash
-az login
-```
+Each NSG is associated with a subnet using:
 
-Verify subscription:
+resource "azurerm_subnet_network_security_group_association"
+🛡️ 4. Azure Bastion Host
 
-```bash
-az account show
-```
+Secure VM access without public IP on VM:
 
-## Deployment
+Requires Public IP (Standard SKU)
+Uses AzureBastionSubnet
+🖥️ 5. Linux Virtual Machines
+Ubuntu 22.04 LTS
+Password authentication enabled
+NIC-based networking
+Dynamic VM creation using for_each
+📥 Input Variables Example
+🖥️ VM Variable
+VM = {
+  vm1 = {
+    vm_name            = "test-vm"
+    location           = "West Europe"
+    resource_group_name= "rg-name"
+    vm_size            = "Standard_B1s"
+    admin_username     = "azureuser"
+    admin_password     = "Password@123"
+    nic_id             = "/subscriptions/.../nic-id"
+  }
+}
+🔐 NSG Variable
+nsg_name = {
+  nsg1 = {
+    nsg_name            = "vm-nsg"
+    location            = "West Europe"
+    resource_group_name = "rg-name"
+  }
+}
+🌐 Bastion Variable
+bastion_pip = {
+  bastion_pip_1 = {
+    name                = "bastion-pip"
+    location            = "West Europe"
+    resource_group_name = "rg-name"
+  }
+}
+🛡️ Bastion Host Variable
+bastion_host = {
+  bastion_host_1 = {
+    host_name           = "bastion-host"
+    location            = "West Europe"
+    resource_group_name = "rg-name"
+    subnet_id           = "/AzureBastionSubnet"
+    pub_key             = "bastion_pip_1"
+    config_name         = "config1"
+  }
+}
+📤 Outputs
+VM IDs & Names
+Private IP Addresses
+NSG IDs
+Bastion Public IP
+Bastion Host ID
 
-Navigate to the required component directory:
+Example:
 
-```bash
-cd virtual_network
-```
-
-Initialize Terraform:
-
-```bash
+output "vm_details" {
+  value = {
+    for k, vm in azurerm_linux_virtual_machine.vm :
+    k => {
+      id         = vm.id
+      name       = vm.name
+      private_ip = vm.private_ip_address
+    }
+  }
+}
+🔐 Security Best Practices
+No public IP on VMs
+Access via Bastion only
+NSGs controlling inbound traffic
+Sensitive data (passwords) should be stored in:
+Azure Key Vault (recommended)
+🚀 How to Deploy
 terraform init
-```
-
-Review execution plan:
-
-```bash
 terraform plan
-```
-
-Deploy infrastructure:
-
-```bash
 terraform apply
-```
+🧹 Cleanup
+terraform destroy
+📌 Notes
+Ensure correct key mapping when using for_each
+Always match nsg_key, pub_key, and VM/NIC keys
+Bastion requires:
+Standard Public IP
+AzureBastionSubnet
+Minimum /27 subnet
+👨‍💻 Author
 
-## Security Notes
-
-The following files are excluded from version control:
-
-* `.terraform/`
-* `terraform.tfstate`
-* `terraform.tfstate.backup`
-* `.terraform.lock.hcl`
-* `terraform.tfvars`
-
-Sensitive values and state files should never be committed to GitHub.
-
-## Learning Objectives
-
-This project demonstrates:
-
-* Azure Infrastructure as Code (IaC)
-* Terraform Module-Based Design
-* Network Segmentation with VNets and Subnets
-* NSG Configuration and Security Controls
-* Azure Bastion Deployment
-* VNet Peering
-* Infrastructure Automation Best Practices
-
-## Author
-
-Sibaram Sahu
-
-## License
-
-This project is intended for learning, experimentation, and infrastructure automation practice.
+Terraform Azure Learning Project
