@@ -10,6 +10,7 @@ The repository contains Terraform configurations for:
 * Virtual Networks (VNet)
 * Subnets
 * Network Security Groups (NSG)
+* nic
 * Virtual Machines (VM)
 * Bastion Host
 * VNet Peering
@@ -21,6 +22,7 @@ The repository contains Terraform configurations for:
 AZ_LANDING_ZONE/
 ├── bastion/
 ├── nsg/
+├── nic/
 ├── resource_group/
 ├── storage_account/
 ├── subnet/
