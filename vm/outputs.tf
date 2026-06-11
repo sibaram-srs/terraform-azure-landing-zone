@@ -1,11 +1,10 @@
-output "vm_id" {
-  value = azurerm_linux_virtual_machine.vm.id
-}
-
-output "vm_name" {
-  value = azurerm_linux_virtual_machine.vm.name
-}
-
-output "vm_private_ip" {
-  value = azurerm_network_interface.nic.private_ip_address
+output "vm_details" {
+  value = {
+    for k, vm in azurerm_linux_virtual_machine.vm :
+    k => {
+      id         = vm.id
+      name       = vm.name
+      private_ip = vm.private_ip_address
+    }
+  }
 }

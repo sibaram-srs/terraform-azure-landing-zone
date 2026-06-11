@@ -1,7 +1,13 @@
 output "bastion_id" {
-  value = azurerm_bastion_host.bastion.id
+  value = {
+    for k, v in azurerm_bastion_host.bastion :
+    k => v.id
+  }
 }
 
 output "bastion_public_ip" {
-  value = azurerm_public_ip.bastion_pip.ip_address
+  value = {
+    for k, v in azurerm_public_ip.bastion_pip :
+    k => v.ip_address
+  }
 }

@@ -1,6 +1,6 @@
 resource_groups = {
   rg1 = {
-    name = "srshiv-rg"
+    name     = "sr-pod-rg"
     location = "West Europe"
   }
 }

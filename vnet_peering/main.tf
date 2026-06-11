@@ -1,25 +1,19 @@
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
-
-  name = var.hub_peering_name
-
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = var.hub_vnet_name
-
-  remote_virtual_network_id = var.spoke_vnet_id
-
+  for_each                     = var.hub_peering
+  name                         = each.value.name
+  resource_group_name          = each.value.resource_group_name
+  virtual_network_name         = each.value.virtual_network_name
+  remote_virtual_network_id    = each.value.remote_virtual_network_id
   allow_virtual_network_access = true
 
 }
 
 resource "azurerm_virtual_network_peering" "spoke_to_hub" {
-
-  name = var.spoke_peering_name
-
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = var.spoke_vnet_name
-
-  remote_virtual_network_id = var.hub_vnet_id
-
+  for_each                     = var.spoke_peering
+  name                         = each.value.name
+  resource_group_name          = each.value.resource_group_name
+  virtual_network_name         = each.value.virtual_network_name
+  remote_virtual_network_id    = each.value.remote_virtual_network_id
   allow_virtual_network_access = true
 
 }

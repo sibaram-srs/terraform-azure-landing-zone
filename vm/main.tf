@@ -1,32 +1,15 @@
-resource "azurerm_network_interface" "nic" {
-
-  name                = "sr-nic"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-
-  ip_configuration {
-
-    name                          = "internal"
-    subnet_id                     = var.subnet_id
-    private_ip_address_allocation = "Dynamic"
-
-  }
-}
-
 resource "azurerm_linux_virtual_machine" "vm" {
+  for_each            = var.VM
+  name                = each.value.vm_name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+  size                = each.value.vm_size
 
-  name                = var.vm_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-
-  size = var.vm_size
-
-  admin_username = var.admin_username
-  admin_password = var.admin_password
+  admin_username = each.value.admin_username
+  admin_password = each.value.admin_password
 
   disable_password_authentication = false
-
-  network_interface_ids = [azurerm_network_interface.nic.id]
+  network_interface_ids           = [each.value.nic_id]
 
   os_disk {
 

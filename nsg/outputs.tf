@@ -1,7 +1,13 @@
-output "nsg_id" {
-  value = azurerm_network_security_group.nsg.id
+output "nsg_ids" {
+  value = {
+    for k, v in azurerm_network_security_group.nsg :
+    k => v.id
+  }
 }
 
-output "nsg_name" {
-  value = azurerm_network_security_group.nsg.name
+output "nsg_names" {
+  value = {
+    for k, v in azurerm_network_security_group.nsg :
+    k => v.name
+  }
 }
